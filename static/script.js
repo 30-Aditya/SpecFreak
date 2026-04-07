@@ -1,53 +1,112 @@
-// Cursor glow tracker logic
-const cursorGlow = document.getElementById('cursor-glow');
+// --- Neural Cursor Engine (LERP Easing) ---
+const cursorHalo = document.getElementById('cursor-halo');
+const cursorDot = document.getElementById('cursor-dot');
+let mouseX = 0, mouseY = 0;
+let haloX = 0, haloY = 0;
+const lerpFactor = 0.1;
+
 document.addEventListener('mousemove', (e) => {
-    cursorGlow.style.left = e.clientX + 'px';
-    cursorGlow.style.top = e.clientY + 'px';
+    mouseX = e.clientX;
+    mouseY = e.clientY;
+    
+    // Dot is instantaneous
+    cursorDot.style.left = mouseX + 'px';
+    cursorDot.style.top = mouseY + 'px';
 });
 
-// Typing placeholder logic
-const placeholders = [
-    "dark emotional story game like Witcher...",
-    "multiplayer shooting game like COD...",
-    "relaxing open world game like Minecraft..."
-];
-let phIndex = 0;
-let charIndex = 0;
-let isDeleting = false;
-let typeDelay = 100;
+function animateCursor() {
+    // Halo uses LERP for smooth lag
+    haloX += (mouseX - haloX) * lerpFactor;
+    haloY += (mouseY - haloY) * lerpFactor;
+    
+    cursorHalo.style.left = haloX + 'px';
+    cursorHalo.style.top = haloY + 'px';
+    
+    requestAnimationFrame(animateCursor);
+}
+animateCursor();
+
+// --- Interactive Particle Engine (Canvas) ---
+const canvas = document.getElementById('ambient-canvas');
+const ctx = canvas.getContext('2d');
+let particles = [];
+let width, height;
+
+function resize() {
+    width = canvas.width = window.innerWidth;
+    height = canvas.height = window.innerHeight;
+}
+window.addEventListener('resize', resize);
+resize();
+
+class Particle {
+    constructor() {
+        this.reset();
+    }
+    reset() {
+        this.x = Math.random() * width;
+        this.y = Math.random() * height;
+        this.vx = (Math.random() - 0.5) * 0.4;
+        this.vy = (Math.random() - 0.5) * 0.4;
+        this.radius = Math.random() * 1.5;
+        this.alpha = Math.random() * 0.5 + 0.2;
+    }
+    draw() {
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(0, 242, 254, ${this.alpha})`;
+        ctx.fill();
+    }
+    update() {
+        // Response to Mouse (Repulsion)
+        const dx = mouseX - this.x;
+        const dy = mouseY - this.y;
+        const dist = Math.sqrt(dx*dx + dy*dy);
+        if (dist < 150) {
+            const angle = Math.atan2(dy, dx);
+            const force = (150 - dist) / 150;
+            this.x -= Math.cos(angle) * force * 1.5;
+            this.y -= Math.sin(angle) * force * 1.5;
+        }
+
+        this.x += this.vx;
+        this.y += this.vy;
+        
+        if (this.x < 0 || this.x > width || this.y < 0 || this.y > height) {
+            this.reset();
+        }
+    }
+}
+
+for (let i = 0; i < 80; i++) particles.push(new Particle());
+
+function animateParticles() {
+    ctx.clearRect(0, 0, width, height);
+    particles.forEach(p => {
+        p.update();
+        p.draw();
+    });
+    requestAnimationFrame(animateParticles);
+}
+animateParticles();
+
+// --- Sidebar Navigation Engine ---
+window.switchTab = function(tabId) {
+    document.querySelectorAll('.nav-item').forEach(item => {
+        item.classList.remove('active');
+        if (item.innerText.toLowerCase().includes(tabId)) item.classList.add('active');
+    });
+    // This could also swap out panels in the main view
+};
+
+// --- Recommendation Logic ---
+const searchBtn = document.getElementById('search-btn');
 const textarea = document.getElementById('query');
 
-function typePlaceholder() {
-    const currentString = placeholders[phIndex];
-    if (isDeleting) {
-        textarea.setAttribute("placeholder", currentString.substring(0, charIndex - 1));
-        charIndex--;
-        typeDelay = 40;
-    } else {
-        textarea.setAttribute("placeholder", currentString.substring(0, charIndex + 1));
-        charIndex++;
-        typeDelay = 100;
-    }
-
-    if (!isDeleting && charIndex === currentString.length) {
-        typeDelay = 2000;
-        isDeleting = true;
-    } else if (isDeleting && charIndex === 0) {
-        isDeleting = false;
-        phIndex = (phIndex + 1) % placeholders.length;
-        typeDelay = 500;
-    }
-    setTimeout(typePlaceholder, typeDelay);
-}
-setTimeout(typePlaceholder, 1000);
-
-// Recommendation Logic
-const searchBtn = document.getElementById('search-btn');
 searchBtn.addEventListener('click', async () => {
     const query = textarea.value.trim();
     if (!query) return;
 
-    // Loading State
     const btnText = document.getElementById('btn-text');
     const btnLoader = document.getElementById('btn-loader');
     const resultsContainer = document.getElementById('results-container');
@@ -72,11 +131,11 @@ searchBtn.addEventListener('click', async () => {
                 resultsContainer.appendChild(card);
             });
         } else {
-            resultsContainer.innerHTML = `<p style="text-align:center; color: var(--text-secondary); width: 100%; grid-column: 1 / -1; font-size: 1.2rem;">Zero matches found. Try exploring another atmosphere.</p>`;
+            resultsContainer.innerHTML = `<p style="text-align:center; color: var(--text-secondary); width: 100%; grid-column: 1 / -1; font-size: 1.2rem;">Zero system matches found. Re-calibrate atmospheric query.</p>`;
         }
     } catch (error) {
-        console.error('Error:', error);
-        resultsContainer.innerHTML = `<p style="text-align:center; color: #ef4444; width: 100%; grid-column: 1 / -1; font-size: 1.2rem;">System glitch. Re-initiating scanner...</p>`;
+        console.error('System Failure:', error);
+        resultsContainer.innerHTML = `<p style="text-align:center; color: var(--accent-neon); width: 100%; grid-column: 1 / -1; font-size: 1.2rem;">CRITICAL ERROR: Neural Scanner Failure.</p>`;
     } finally {
         searchBtn.disabled = false;
         btnText.style.display = 'block';
@@ -87,9 +146,9 @@ searchBtn.addEventListener('click', async () => {
 function createGameCard(game, index) {
     const div = document.createElement('div');
     div.className = 'game-card';
-    div.style.animationDelay = `${index * 0.1}s`;
+    div.style.animation = `fadeInUp 0.6s forwards ease-out ${index * 0.15}s`;
 
-    // 3D Tilt Hook
+    // High-Fidelity 3D Tilt Hook
     div.addEventListener('mousemove', (e) => {
         const rect = div.getBoundingClientRect();
         const x = e.clientX - rect.left;
@@ -97,10 +156,10 @@ function createGameCard(game, index) {
         const centerX = rect.width / 2;
         const centerY = rect.height / 2;
         
-        const rotateX = ((y - centerY) / centerY) * -8;
-        const rotateY = ((x - centerX) / centerX) * 8;
+        const rotateX = ((y - centerY) / centerY) * -15; // Increased tilt intensity
+        const rotateY = ((x - centerX) / centerX) * 15;
         
-        div.style.transform = `perspective(1200px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale3d(1.02, 1.02, 1.02)`;
+        div.style.transform = `perspective(1200px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale3d(1.05, 1.05, 1.05)`;
     });
     
     div.addEventListener('mouseleave', () => {
@@ -108,22 +167,30 @@ function createGameCard(game, index) {
     });
 
     const gameHash = game.name.replace(/\s+/g, '').toLowerCase();
+    const confidence = (game.final_score * 100).toFixed(0);
 
     div.innerHTML = `
-        <div class="card-img-container">
-            <img src="https://picsum.photos/seed/${gameHash}/400/250" alt="${game.name}" class="game-image" loading="lazy">
-            <div class="score-badge">${(game.final_score * 100).toFixed(0)}% Match</div>
+        <div class="card-image-wrap">
+            <img src="https://picsum.photos/seed/${gameHash}/400/250" alt="${game.name}" class="game-img" loading="lazy">
+            <div class="match-probability">${confidence}% MATCH</div>
         </div>
-        <div class="card-body">
-            <h3 class="game-title">${game.name}</h3>
-            <div class="game-tags">
-                <span class="tag">${game.genre}</span>
-                <span class="tag">${game.type}</span>
+        <div class="card-content">
+            <h3 class="card-title">${game.name}</h3>
+            
+            <div class="confidence-bar-wrap">
+                <div class="confidence-bar" style="width: ${confidence}%"></div>
             </div>
-            <p class="game-description">${game.description}</p>
-            <div class="card-footer">
-                <span class="platform-tag">${game.platform}</span>
-                <div class="rating-indicator" style="color: #fbbf24; font-size: 0.8rem; font-weight: 700;">★ Meta: ${game.meta_score}</div>
+
+            <div style="display: flex; gap: 0.5rem; margin-bottom: 1rem;">
+                <span style="background: rgba(188, 19, 254, 0.2); color: var(--secondary-neon); font-size: 0.75rem; padding: 0.2rem 0.6rem; border-radius: 4px; border: 1px solid rgba(188, 19, 254, 0.4);">${game.genre}</span>
+                <span style="color: var(--text-secondary); font-size: 0.75rem;">${game.platform}</span>
+            </div>
+            
+            <p style="font-size: 0.9rem; color: var(--text-secondary); line-height: 1.5; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden;">${game.description}</p>
+            
+            <div style="margin-top: 1.5rem; display: flex; justify-content: space-between; align-items: center; border-top: 1px solid rgba(255,255,255,0.05); padding-top: 1rem;">
+                <span style="color: var(--primary-neon); font-family: 'Orbitron'; font-size: 0.8rem;">★ Meta: ${game.meta_score}</span>
+                <span style="font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.1em; color: rgba(255,255,255,0.3);">${game.type}</span>
             </div>
         </div>
     `;
