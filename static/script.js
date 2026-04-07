@@ -96,13 +96,13 @@ const menuToggle = document.getElementById('menu-toggle');
 const overlay = document.getElementById('sidebar-overlay');
 
 function toggleSidebar() {
-    sidebar.classList.toggle('open');
-    menuToggle.classList.toggle('open');
-    overlay.classList.toggle('active');
+    if (sidebar) sidebar.classList.toggle('open');
+    if (menuToggle) menuToggle.classList.toggle('open');
+    if (overlay) overlay.classList.toggle('active');
 }
 
-menuToggle.addEventListener('click', toggleSidebar);
-overlay.addEventListener('click', toggleSidebar);
+if (menuToggle) menuToggle.addEventListener('click', toggleSidebar);
+if (overlay) overlay.addEventListener('click', toggleSidebar);
 
 // Close sidebar on item click (mobile)
 document.querySelectorAll('.nav-item').forEach(item => {
@@ -164,7 +164,8 @@ if (document.readyState === 'complete' || document.readyState === 'interactive')
 const searchBtn = document.getElementById('search-btn');
 const textarea = document.getElementById('query');
 
-searchBtn.addEventListener('click', async () => {
+if (searchBtn && textarea) {
+    searchBtn.addEventListener('click', async () => {
     const query = textarea.value.trim();
     if (!query) return;
 
@@ -197,12 +198,13 @@ searchBtn.addEventListener('click', async () => {
     } catch (error) {
         console.error('System Failure:', error);
         resultsContainer.innerHTML = `<p style="text-align:center; color: var(--accent-neon); width: 100%; grid-column: 1 / -1; font-size: 1.2rem;">CRITICAL ERROR: Neural Scanner Failure.</p>`;
-    } finally {
-        searchBtn.disabled = false;
-        btnText.style.display = 'block';
-        btnLoader.style.display = 'none';
-    }
-});
+        } finally {
+            searchBtn.disabled = false;
+            btnText.style.display = 'block';
+            btnLoader.style.display = 'none';
+        }
+    });
+}
 
 function createGameCard(game, index) {
     const div = document.createElement('div');
@@ -259,13 +261,17 @@ function createGameCard(game, index) {
 }
 
 window.runDemo = function(text) {
-    textarea.value = text;
-    searchBtn.click();
-};
-
-textarea.addEventListener('keypress', (e) => {
-    if (e.key === 'Enter' && !e.shiftKey) {
-        e.preventDefault();
+    if (textarea && searchBtn) {
+        textarea.value = text;
         searchBtn.click();
     }
-});
+};
+
+if (textarea && searchBtn) {
+    textarea.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter' && !e.shiftKey) {
+            e.preventDefault();
+            searchBtn.click();
+        }
+    });
+}
