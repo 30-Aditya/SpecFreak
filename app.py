@@ -5,7 +5,7 @@ from model.recommender import GameRecommender
 app = Flask(__name__)
 
 # Initialize the recommender
-DATA_PATH = os.path.join(os.path.dirname(__file__), 'data', 'games_dataset.csv')
+DATA_PATH = os.path.join(os.path.dirname(__file__), 'data', 'games_of_all_time.csv')
 recommender = GameRecommender(DATA_PATH)
 
 @app.route('/')
