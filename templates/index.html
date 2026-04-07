@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SpecFreak - NLP Game Recommender</title>
+    <!-- Use Google Fonts for dynamic modern typography -->
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=Inter:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div id="cursor-glow" class="cursor-glow"></div>
+    <div class="top-banner">AI-Powered Game Discovery</div>
+    
+    <div class="background-elements">
+        <div class="blob blob-1"></div>
+        <div class="blob blob-2"></div>
+    </div>
+    
+    <div class="container">
+        <header>
+            <h1 class="glow-text">SpecFreak – AI Game Recommender</h1>
+            <p class="subtitle">Find games using natural language</p>
+        </header>
+
+        <div class="search-section glass-panel">
+            <label for="query">What are you in the mood to play?</label>
+            <textarea id="query" rows="3" placeholder="e.g. A dark emotional single-player story game like the witcher with good graphics..."></textarea>
+            <button id="search-btn" class="primary-btn">
+                <span>Recommend Games</span>
+                <div class="loader" id="btn-loader" style="display: none;"></div>
+            </button>
+        </div>
+
+        <div id="results-container" class="results-grid">
+            <!-- Results injected here via JS -->
+        </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html>
