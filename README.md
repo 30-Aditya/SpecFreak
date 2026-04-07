@@ -44,3 +44,14 @@ SpecFreak bridges the gap between how people think and how content is categorize
 
 4. **Access the Engine**
    Open your browser and navigate to `http://127.0.0.1:5000` to start exploring.
+
+## ☁️ Deployment (Web Hosting)
+SpecFreak is strictly production-ready. You can deploy it instantly and completely for free using [Render](https://render.com) or [Railway](https://railway.app).
+Because the repository natively includes `gunicorn` inside `requirements.txt` and a root `Procfile`, it is a 1-click deployment.
+
+### Deploying to Render
+1. Create a free account on [Render.com](https://render.com).
+2. Click **New +** and select **Web Service**.
+3. Connect your GitHub account and select your `SpecFreak` repository.
+4. Render will seamlessly detect your Python environment via the Procfile.
+5. Hit **Deploy**! Wait approximately two minutes and your NLP Engine will be live on the web for anyone to use!

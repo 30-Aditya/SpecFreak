@@ -184,3 +184,9 @@ function createGameCard(game, index) {
     `;
     return div;
 }
+
+// Global Demo Trigger
+window.runDemo = function(text) {
+    document.getElementById('query').value = text;
+    document.getElementById('search-btn').click();
+};

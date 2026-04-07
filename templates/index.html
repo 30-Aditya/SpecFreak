@@ -26,6 +26,14 @@
         <div class="search-section glass-panel">
             <label for="query">What are you in the mood to play?</label>
             <textarea id="query" rows="3" placeholder="e.g. A dark emotional single-player story game like the witcher with good graphics..."></textarea>
+            
+            <div class="demo-pills">
+                <span class="pill" onclick="runDemo('A dark emotional single-player story game like witcher')">Dark Story</span>
+                <span class="pill" onclick="runDemo('fast paced multiplayer hero shooter')">Competitive FPS</span>
+                <span class="pill" onclick="runDemo('relaxing pixel art farming sim')">Cozy Sim</span>
+                <span class="pill" onclick="runDemo('brutally difficult ninja game with parrying')">Hardcore Action</span>
+            </div>
+
             <button id="search-btn" class="primary-btn">
                 <span>Recommend Games</span>
                 <div class="loader" id="btn-loader" style="display: none;"></div>
