@@ -23,7 +23,7 @@ def recommend():
     if not query:
         return jsonify({'error': 'No query provided', 'results': []}), 400
         
-    results = recommender.recommend(query, top_n=5)
+    results = recommender.recommend(query, top_n=12)
     return jsonify({'results': results})
 
 if __name__ == '__main__':
