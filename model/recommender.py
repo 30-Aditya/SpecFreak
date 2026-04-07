@@ -18,7 +18,11 @@ class GameRecommender:
         # 2. Clean missing values
         self.df.fillna('', inplace=True)
         
-        # 3. Combine features into one text field: description + genre + platform + type
+        # 3. Clean columns (they are string represented lists like "['Action', 'RPG']")
+        for col in ['genre', 'platform']:
+            self.df[col] = self.df[col].astype(str).str.replace(r"[\[\]']", "", regex=True)
+            
+        # 4. Combine features into one text field: description + genre + platform + type
         self.df['combined_features'] = (
             self.df['description'].astype(str) + " " + 
             self.df['genre'].astype(str) + " " + 
@@ -26,7 +30,7 @@ class GameRecommender:
             self.df['type'].astype(str)
         )
         
-        # 4. Apply TF-IDF vectorization on combined text and store vectorized matrix
+        # 5. Apply TF-IDF vectorization on combined text and store vectorized matrix
         self.tfidf_matrix = self.tfidf.fit_transform(self.df['combined_features'])
         
     def recommend(self, query, top_n=5):
@@ -39,46 +43,44 @@ class GameRecommender:
         # Compute cosine similarity
         sim_scores = cosine_similarity(query_vec, self.tfidf_matrix).flatten()
         
+        # Vectorized scoring logic
+        # 1. Similarity is already a vector (sim_scores)
+        
+        # 2. Extract scores (meta and user)
+        # Handle cases where scores might be non-numeric (if any remain after cleaning)
+        meta_scores = pd.to_numeric(self.df['meta_score'], errors='coerce').fillna(50)
+        user_scores = pd.to_numeric(self.df['user_score'], errors='coerce').fillna(50)
+        
+        # 3. Normalize scores (Both are 0-100 in the new dataset)
+        meta_norm = meta_scores / 100.0
+        user_norm = user_scores / 100.0
+        
+        sentiment_scores = (meta_norm + user_norm) / 2.0
+        
+        # 4. Hybrid Final Score (0.7 sim + 0.3 sentiment)
+        final_scores = (0.7 * sim_scores) + (0.3 * sentiment_scores)
+        
+        # 5. Add to DataFrame temporary results
+        self.df['similarity'] = sim_scores
+        self.df['sentiment'] = sentiment_scores
+        self.df['final_score'] = final_scores
+        
+        # Sort and get top_n
+        top_games = self.df.sort_values(by='final_score', ascending=False).head(top_n)
+        
         results = []
-        for idx in range(len(self.df)):
-            sim = sim_scores[idx]
-            
-            # Extract scores securely
-            try:
-                meta = float(self.df.iloc[idx].get('meta_score', 50))
-            except ValueError:
-                meta = 50.0
-                
-            try:
-                user_score = float(self.df.iloc[idx].get('user_score', 5.0))
-            except ValueError:
-                user_score = 5.0
-                
-            # Normalize scores to 0-1 range to align with Cosine Similarity (0-1)
-            meta_norm = meta / 100.0
-            user_norm = user_score / 10.0
-            
-            # Implement sentiment scoring
-            sentiment_score = (meta_norm + user_norm) / 2.0
-            
-            # Hybrid Final Score formula
-            final_score = (0.7 * sim) + (0.3 * sentiment_score)
-            
+        for _, row in top_games.iterrows():
             results.append({
-                'name': self.df.iloc[idx]['name'],
-                'genre': self.df.iloc[idx]['genre'],
-                'platform': self.df.iloc[idx]['platform'],
-                'description': self.df.iloc[idx]['description'],
-                'meta_score': meta,
-                'user_score': user_score,
-                'type': self.df.iloc[idx]['type'],
-                'similarity': round(sim, 3),
-                'sentiment': round(sentiment_score, 3),
-                'final_score': round(final_score, 3)
+                'name': row['game_name'],
+                'genre': row['genre'],
+                'platform': row['platform'],
+                'description': row['description'],
+                'meta_score': float(row['meta_score']),
+                'user_score': float(row['user_score']),
+                'type': row['type'],
+                'similarity': round(float(row['similarity']), 3),
+                'sentiment': round(float(row['sentiment']), 3),
+                'final_score': round(float(row['final_score']), 3)
             })
             
-        # Optional: Only consider games that have at least some relevance
-        # If all similarities are 0, we fallback purely on sentiment, which might just recommend the highest rated game overall.
-        
-        results = sorted(results, key=lambda x: x['final_score'], reverse=True)
-        return results[:top_n]
+        return results
