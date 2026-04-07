@@ -12,6 +12,10 @@ recommender = GameRecommender(DATA_PATH)
 def home():
     return render_template('index.html')
 
+@app.route('/health')
+def health_check():
+    return "SpecFreak is Live 🚀"
+
 @app.route('/recommend', methods=['POST'])
 def recommend():
     data = request.json
