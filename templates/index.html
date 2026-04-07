@@ -3,48 +3,49 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SpecFreak - NLP Game Recommender</title>
+    <title>SpecFreak | AI-Powered Game Discovery</title>
     <!-- Use Google Fonts for dynamic modern typography -->
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=Inter:wght@400;500&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link rel="icon" type="image/png" href="https://img.icons8.com/isometric/50/controller.png">
 </head>
 <body>
     <div id="cursor-glow" class="cursor-glow"></div>
-    <div class="top-banner">AI-Powered Game Discovery</div>
-    
-    <div class="background-elements">
-        <div class="blob blob-1"></div>
-        <div class="blob blob-2"></div>
-    </div>
     
     <div class="container">
-        <header>
-            <h1 class="glow-text">SpecFreak – AI Game Recommender</h1>
-            <p class="subtitle">Find games using natural language</p>
+        <!-- Hero Section -->
+        <header class="hero">
+            <h1>Discover Your <span class="neon-text">Perfect Game</span> Instantly 🎮</h1>
+            <p>Tell our AI what you're in the mood for, and let SpecFreak scan thousands of titles to find your next obsession.</p>
         </header>
 
-        <div class="search-section glass-panel">
-            <label for="query">What are you in the mood to play?</label>
-            <textarea id="query" rows="3" placeholder="e.g. A dark emotional single-player story game like the witcher with good graphics..."></textarea>
+        <!-- Search Section -->
+        <main class="search-container">
+            <div class="input-group">
+                <textarea id="query" rows="3" placeholder="I want a dark emotional story game like The Witcher..."></textarea>
+                <div class="input-icon">🎯</div>
+            </div>
             
-            <div class="demo-pills">
-                <span class="pill" onclick="runDemo('A dark emotional single-player story game like witcher')">Dark Story</span>
-                <span class="pill" onclick="runDemo('fast paced multiplayer hero shooter')">Competitive FPS</span>
-                <span class="pill" onclick="runDemo('relaxing pixel art farming sim')">Cozy Sim</span>
-                <span class="pill" onclick="runDemo('brutally difficult ninja game with parrying')">Hardcore Action</span>
+            <div class="pills-container">
+                <div class="pill" onclick="runDemo('Dark emotional single-player story game like the witcher')">Dark Story</div>
+                <div class="pill" onclick="runDemo('fast paced multiplayer hero shooter with neon vibe')">Competitive FPS</div>
+                <div class="pill" onclick="runDemo('relaxing pixel art farming simulator with cozy atmosphere')">Cozy Sim</div>
+                <div class="pill" onclick="runDemo('brutally difficult action game with parrying mechanics')">Hardcore Action</div>
             </div>
 
-            <button id="search-btn" class="primary-btn">
-                <span>Recommend Games</span>
+            <button id="search-btn" class="btn-recommend">
+                <span id="btn-text">Recommend Games</span>
                 <div class="loader" id="btn-loader" style="display: none;"></div>
             </button>
-        </div>
+        </main>
 
-        <div id="results-container" class="results-grid">
-            <!-- Results injected here via JS -->
-        </div>
+        <!-- Results Section -->
+        <section id="results-container" class="results-grid">
+            <!-- Dynamic Cards Injected Here -->
+        </section>
     </div>
 
+    <!-- UI/UX Interaction Scripts -->
     <script src="{{ url_for('static', filename='script.js') }}"></script>
 </body>
 </html>
