@@ -90,14 +90,75 @@ function animateParticles() {
 }
 animateParticles();
 
-// --- Sidebar Navigation Engine ---
+// --- Sidebar & Mobile Navigation ---
+const sidebar = document.querySelector('.sidebar');
+const menuToggle = document.getElementById('menu-toggle');
+const overlay = document.getElementById('sidebar-overlay');
+
+function toggleSidebar() {
+    sidebar.classList.toggle('open');
+    menuToggle.classList.toggle('open');
+    overlay.classList.toggle('active');
+}
+
+menuToggle.addEventListener('click', toggleSidebar);
+overlay.addEventListener('click', toggleSidebar);
+
+// Close sidebar on item click (mobile)
+document.querySelectorAll('.nav-item').forEach(item => {
+    item.addEventListener('click', () => {
+        if (window.innerWidth <= 768 && sidebar.classList.contains('open')) {
+            toggleSidebar();
+        }
+    });
+});
+
 window.switchTab = function(tabId) {
     document.querySelectorAll('.nav-item').forEach(item => {
         item.classList.remove('active');
-        if (item.innerText.toLowerCase().includes(tabId)) item.classList.add('active');
+        const label = item.innerText.toLowerCase();
+        // Fixed Telemetry/Stats logic
+        if (label.includes(tabId) || (tabId === 'stats' && label.includes('telemetry'))) {
+            item.classList.add('active');
+        }
     });
-    // This could also swap out panels in the main view
 };
+
+// --- Telemetry Animation Engine ---
+function animateStats() {
+    const totalElem = document.getElementById('stat-total');
+    const latencyElem = document.getElementById('stat-latency');
+    
+    if (!totalElem || !latencyElem) return;
+
+    let total = 0;
+    const targetTotal = 15063;
+    const totalInterval = setInterval(() => {
+        total += Math.floor(targetTotal / 40);
+        if (total >= targetTotal) {
+            totalElem.innerText = targetTotal.toLocaleString();
+            clearInterval(totalInterval);
+        } else {
+            totalElem.innerText = total.toLocaleString();
+        }
+    }, 30);
+
+    let latency = 0;
+    const targetLatency = 120;
+    const latInterval = setInterval(() => {
+        latency += 10;
+        if (latency >= targetLatency) {
+            latencyElem.innerText = targetLatency + 'ms';
+            clearInterval(latInterval);
+        } else {
+            latencyElem.innerText = latency + 'ms';
+        }
+    }, 50);
+}
+
+document.addEventListener('DOMContentLoaded', animateStats);
+// Immediate check if DOM already loaded
+if (document.readyState === 'complete' || document.readyState === 'interactive') animateStats();
 
 // --- Recommendation Logic ---
 const searchBtn = document.getElementById('search-btn');
