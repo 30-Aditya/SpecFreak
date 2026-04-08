@@ -69,36 +69,88 @@
 
     <!-- --- MAIN DASHBOARD --- -->
     <main class="main-dashboard" id="main-panel">
-        <header class="dashboard-header">
-            <p style="text-transform: uppercase; letter-spacing: 0.3em; font-size: 0.75rem; color: var(--secondary-neon); margin-bottom: 0.5rem;">Discovery Phase: Initialized</p>
-            <h1>Atmospheric Recommendation HUB</h1>
-        </header>
+        
+        <!-- DISCOVERY PANEL -->
+        <section id="panel-discovery" class="tab-panel active">
+            <header class="dashboard-header">
+                <p style="text-transform: uppercase; letter-spacing: 0.3em; font-size: 0.75rem; color: var(--secondary-neon); margin-bottom: 0.5rem;">Discovery Phase: Initialized</p>
+                <h1>Atmospheric Recommendation HUB</h1>
+            </header>
 
-        <section class="command-hub">
-            <div class="hud-panel">
-                <p style="font-family: 'Orbitron'; font-size: 0.7rem; color: var(--text-secondary); margin-bottom: 1.5rem; letter-spacing: 0.15em;">// ENTER SEMANTIC ATMOSPHERE QUERY</p>
-                
-                <textarea id="query" rows="4" placeholder="REQUESTING INPUT: e.g. An atmospheric post-apocalyptic story with neon noir vibes and immersive scoring..."></textarea>
-                
-                <!-- Quick-Select Pills -->
-                <div style="display: flex; flex-wrap: wrap; gap: 0.75rem; justify-content: center; margin-top: 1.5rem;">
-                    <span class="pill" onclick="runDemo('Dark emotional single-player story game like the witcher')">DARK STORY</span>
-                    <span class="pill" onclick="runDemo('Fast paced competitive multiplayer hero shooter')">ELITE FPS</span>
-                    <span class="pill" onclick="runDemo('Relaxing pixel art farming simulator cozy vibe')">COZY CORE</span>
-                    <span class="pill" onclick="runDemo('Soulslike brutally difficult parrying combat')">HARDCORE</span>
+            <section class="command-hub">
+                <div class="hud-panel">
+                    <p style="font-family: 'Orbitron'; font-size: 0.7rem; color: var(--text-secondary); margin-bottom: 1.5rem; letter-spacing: 0.15em;">// ENTER SEMANTIC ATMOSPHERE QUERY</p>
+                    
+                    <textarea id="query" rows="4" placeholder="REQUESTING INPUT: e.g. An atmospheric post-apocalyptic story with neon noir vibes and immersive scoring..."></textarea>
+                    
+                    <!-- Quick-Select Pills -->
+                    <div style="display: flex; flex-wrap: wrap; gap: 0.75rem; justify-content: center; margin-top: 1.5rem;">
+                        <span class="pill" onclick="runDemo('Dark emotional single-player story game like the witcher')">DARK STORY</span>
+                        <span class="pill" onclick="runDemo('Fast paced competitive multiplayer hero shooter')">ELITE FPS</span>
+                        <span class="pill" onclick="runDemo('Relaxing pixel art farming simulator cozy vibe')">COZY CORE</span>
+                        <span class="pill" onclick="runDemo('Soulslike brutally difficult parrying combat')">HARDCORE</span>
+                    </div>
+
+                    <button class="btn-initialize" id="search-btn">
+                        <span id="btn-text">INITIALIZE SYSTEM SCAN</span>
+                        <div class="loader" id="btn-loader" style="display: none; margin: 0 auto;"></div>
+                    </button>
                 </div>
 
-                <button class="btn-initialize" id="search-btn">
-                    <span id="btn-text">INITIALIZE SYSTEM SCAN</span>
-                    <div class="loader" id="btn-loader" style="display: none; margin: 0 auto;"></div>
-                </button>
-            </div>
+                <!-- Dynamic Scan Results -->
+                <div id="results-container" class="results-grid">
+                    <!-- AI Recommendations Injected Here -->
+                </div>
+            </section>
+        </section>
 
-            <!-- Dynamic Scan Results -->
-            <div id="results-container" class="results-grid">
-                <!-- AI Recommendations Injected Here -->
+        <!-- TELEMETRY PANEL -->
+        <section id="panel-stats" class="tab-panel">
+            <header class="dashboard-header">
+                <p style="text-transform: uppercase; letter-spacing: 0.3em; font-size: 0.75rem; color: var(--primary-neon); margin-bottom: 0.5rem;">Core Telemetry: Online</p>
+                <h1>Neural System Logs</h1>
+            </header>
+            <div class="hud-panel console-box">
+                <div id="telemetry-log" class="system-log">
+                    <div class="log-entry">> Initializing Neural Link...</div>
+                    <div class="log-entry">> System Status: Stable</div>
+                    <div class="log-entry">> Waiting for Atmospheric Input...</div>
+                </div>
             </div>
         </section>
+
+        <!-- ARCHIVE PANEL -->
+        <section id="panel-archive" class="tab-panel">
+            <header class="dashboard-header">
+                <p style="text-transform: uppercase; letter-spacing: 0.3em; font-size: 0.75rem; color: var(--accent-neon); margin-bottom: 0.5rem;">Historical Archives: Accessible</p>
+                <h1>Previous Scans</h1>
+            </header>
+            <div id="archive-container" class="results-grid">
+                <!-- Saved Scans Injected Here -->
+                <p style="color: var(--text-secondary); text-align: center; width: 100%; grid-column: 1/-1;">No archived scans found in local storage.</p>
+            </div>
+        </section>
+
+        <!-- NEURAL CONFIG PANEL -->
+        <section id="panel-neural" class="tab-panel">
+            <header class="dashboard-header">
+                <p style="text-transform: uppercase; letter-spacing: 0.3em; font-size: 0.75rem; color: #fff; margin-bottom: 0.5rem;">Neural-Config: Calibrating</p>
+                <h1>Interface Parameters</h1>
+            </header>
+            <div class="hud-panel">
+                <p style="color: var(--text-secondary); margin-bottom: 2rem;">Adjust the atmospheric parameters of the SpecFreak Interface.</p>
+                <div class="config-row">
+                    <span>Particle Density</span>
+                    <input type="range" min="0" max="200" value="80" id="cfg-particles">
+                </div>
+                <div class="config-row">
+                    <span>Ambient Glow</span>
+                    <input type="range" min="0" max="100" value="50" id="cfg-glow">
+                </div>
+                <button class="btn-initialize" style="margin-top: 2rem; background: var(--glass-bg); border: 1px solid var(--primary-neon);" onclick="alert('Configuration Saved to Neural Link')">SAVE PARAMETERS</button>
+            </div>
+        </section>
+
     </main>
 
     <!-- Core Neural Experience Script -->
