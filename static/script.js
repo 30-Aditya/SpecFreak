@@ -166,6 +166,10 @@ if (searchBtn && textarea) {
             const latency = Date.now() - startTime;
             const data = await response.json();
             
+            if (!response.ok) {
+                throw new Error(data.error || `System Error: ${response.status}`);
+            }
+
             addLog(`Neural sync successful. Latency: ${latency}ms`, "success");
             addLog(`System identified ${data.results ? data.results.length : 0} atmospheric matches.`);
 
@@ -180,11 +184,17 @@ if (searchBtn && textarea) {
             }
         } catch (error) {
             addLog(`CRITICAL SYSTEM FAILURE: ${error.message}`, "error");
-            resultsContainer.innerHTML = `<p style="text-align:center; color: var(--accent-neon); width: 100%; grid-column: 1 / -1; font-size: 1.2rem;">CRITICAL ERROR: Neural Scanner Failure.</p>`;
+            resultsContainer.innerHTML = `<p style="text-align:center; color: var(--accent-neon); width: 100%; grid-column: 1 / -1; font-size: 1.2rem;">CRITICAL ERROR: ${error.message}</p>`;
         } finally {
             searchBtn.disabled = false;
             btnText.style.display = 'block';
             btnLoader.style.display = 'none';
+        }
+    });
+    // Support for CMD/CTRL + Enter to search
+    textarea.addEventListener('keydown', (e) => {
+        if ((e.metaKey || e.ctrlKey) && e.key === 'Enter') {
+            searchBtn.click();
         }
     });
 }

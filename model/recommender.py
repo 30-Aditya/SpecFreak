@@ -62,6 +62,9 @@ class GameRecommender:
         user_scores = pd.to_numeric(self.df['user_score'], errors='coerce').fillna(60)
         quality_score = ((meta_scores / 100.0) + (user_scores / 100.0)) / 2.0
         
+        # Ensure quality_score is clean for calculation
+        quality_score = quality_score.fillna(0.6)
+        
         # 6. Final Calculation: 70% Similarity, 30% Quality
         final_scores = (0.7 * combined_sim) + (0.3 * quality_score)
         
@@ -72,15 +75,20 @@ class GameRecommender:
         
         results = []
         for _, row in top_games.iterrows():
+            # Sanitize scores for JSON (replace NaNs with valid floats)
+            m_score = float(row['meta_score']) if pd.notnull(row['meta_score']) else 0.0
+            u_score = float(row['user_score']) if pd.notnull(row['user_score']) else 0.0
+            f_score = float(row['final_score']) if pd.notnull(row['final_score']) else 0.0
+            
             results.append({
                 'name': row['game_name'],
                 'genre': row['genre'],
                 'platform': row['platform'],
                 'description': row['description'],
-                'meta_score': float(row['meta_score']) if row['meta_score'] else 0.0,
-                'user_score': float(row['user_score']) if row['user_score'] else 0.0,
+                'meta_score': m_score,
+                'user_score': u_score,
                 'type': row['type'],
-                'final_score': round(float(row['final_score']), 3)
+                'final_score': round(f_score, 3)
             })
             
         return results
