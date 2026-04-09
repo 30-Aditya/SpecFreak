@@ -32,6 +32,11 @@ window.switchTab = function(tabId) {
 
     addLog(`Navigated to system node: ${tabId.toUpperCase()}`);
 
+    // Special behavior for mobile: Close sidebar on nav
+    if (window.innerWidth <= 768) {
+        toggleSidebar();
+    }
+    
     // Special behavior for archive
     if (tabId === 'archive') loadArchive();
 };
