@@ -10,10 +10,10 @@ class GameRecommender:
         self.df = None
         self.tfidf = TfidfVectorizer(
             stop_words='english',
-            ngram_range=(1, 2),  # Next Level: Match phrases like "Open World"
-            max_features=5000
+            ngram_range=(1, 2),  # Match phrases like "Open World"
+            max_features=5000   # Optimized for Render free tier (512MB RAM)
         )
-        self.svd = TruncatedSVD(n_components=100, random_state=42) # The Semantic "Neural" Layer
+        self.svd = TruncatedSVD(n_components=50, random_state=42)  # Semantic "Neural" Layer - memory optimized
         self.semantic_matrix = None
         self.tfidf_matrix = None
         
